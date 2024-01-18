@@ -15,20 +15,16 @@ class AppTest {
         var emptyList = new ArrayList<Integer>();
 
         var actualEmpty = App.take(emptyList, 4);
-        System.out.println(actualEmpty);
         assertThat(actualEmpty).isEmpty();
 
         var actualZero = App.take(numbers, 0);
-        System.out.println(actualZero);
         assertThat(actualZero).isEmpty();
 
         var actualOver = App.take(numbers, 10);
-        System.out.println(actualOver);
         assertThat(actualOver).isEqualTo(numbers);
 
         var actualOrd = App.take(numbers, 3);
         var expectedOrd = new ArrayList<>(Arrays.asList(1, 2, 3));
-        System.out.println(actualOrd);
         assertThat(actualOrd).isEqualTo(expectedOrd);
         // END
     }
