@@ -19,12 +19,9 @@ public class Tag {
     }
 
     public String attributesToString() {
-        if (attributes.isEmpty()) {
-            return "";
-        }
-        return " " + attributes.entrySet().stream()
-                .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining(" "));
+        return attributes.entrySet().stream()
+                .map(entry -> String.format(" %s=\"%s\"", entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining(""));
     }
 
     public String toString() {
