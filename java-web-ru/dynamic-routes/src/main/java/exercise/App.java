@@ -23,7 +23,7 @@ public final class App {
             String id = ctx.pathParamAsClass("id", String.class).get();
 
             Map<String, String> selectedCompany = COMPANIES.stream()
-                    .filter(map -> map.containsValue(id))
+                    .filter(map -> map.get("id").equals(id))
                     .findAny().orElse(null);
 
             if (selectedCompany == null) {
