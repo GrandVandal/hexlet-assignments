@@ -18,16 +18,17 @@ public final class App {
 
         // BEGIN
         app.get("/users", ctx -> {
-            List<Map<String, String>> displayedUsers = new ArrayList<>();
             int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1);
-            int userNumber = ctx.queryParamAsClass("per", Integer.class).getOrDefault(5);
+            int per = ctx.queryParamAsClass("per", Integer.class).getOrDefault(5);
 
-            int begin = (page - 1) * userNumber;
-            int end = page * userNumber;
-            for (int i = begin; i < end; i++) {
-                if (i < USERS.size()) {
-                    displayedUsers.add(USERS.get(i));
-                }
+            List<Map<String, String>> displayedUsers;
+            int offset = (page - 1) * per;
+            if (offset + per < USERS.size() && offset >= 0 && per >= 0) {
+                displayedUsers = USERS.subList(offset, offset + per);
+            } else if (offset >= USERS.size() || offset + per < 1 || (page < 0 && per < 0)) {
+                displayedUsers = new ArrayList<>();
+            } else {
+                displayedUsers = new ArrayList<>(USERS);
             }
 
             ctx.json(displayedUsers);
