@@ -1,5 +1,10 @@
 ---
 # BEGIN
+spring:
+  output:
+    ansi:
+      enabled: always
+
 server:
   port: 7070
 # END
