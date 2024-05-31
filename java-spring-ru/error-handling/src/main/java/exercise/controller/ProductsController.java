@@ -44,14 +44,16 @@ public class ProductsController {
     }
 
     @PutMapping("/{id}")
-    public Product show(@PathVariable long id, @RequestBody Product product) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product with id " + id + " not found");
-        }
-        var newProduct = productRepository.getReferenceById(id);
-        newProduct.setTitle(product.getTitle());
-        newProduct.setPrice(product.getPrice());
-        return newProduct;
+    public Product show(@PathVariable long id, @RequestBody Product productData) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " not found"));
+
+        product.setTitle(productData.getTitle());
+        product.setPrice(productData.getPrice());
+
+        productRepository.save(product);
+
+        return product;
     }
     // END
 
