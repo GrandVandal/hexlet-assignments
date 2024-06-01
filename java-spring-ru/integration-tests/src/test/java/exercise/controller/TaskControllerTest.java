@@ -70,23 +70,18 @@ class ApplicationTest {
     // BEGIN
     @Test
     public void testCreate() throws Exception {
-        var taskData = new HashMap<>();
-        taskData.put("title", "New title");
-        taskData.put("description", "New description");
+        var data = generateTask();
 
         var request = post("/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(taskData));
-        var result = mockMvc.perform(request)
-                .andExpect(status().isCreated())
-                .andReturn();
-        var body = result.getResponse().getContentAsString();
+                .content(om.writeValueAsString(data));
+        mockMvc.perform(request)
+                .andExpect(status().isCreated());
+        var task = taskRepository.findByTitle(data.getTitle()).orElseThrow();
 
-        assertThatJson(body).and(
-                a -> a.node("id").isEqualTo(2),
-                a -> a.node("title").isEqualTo("New title"),
-                a -> a.node("description").isEqualTo("New description")
-        );
+        assertThat(task).isNotNull();
+        assertThat(task.getTitle()).isEqualTo(data.getTitle());
+        assertThat(task.getDescription()).isEqualTo(data.getDescription());
     }
 
     @Test
