@@ -67,6 +67,9 @@ public class TasksController {
         var task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + "not found"));
         mapper.update(taskData, task);
+        task.setAssignee(
+                userRepository.findById(taskData.getAssigneeId()).orElseThrow()
+        );
         taskRepository.save(task);
         return mapper.map(task);
     }
