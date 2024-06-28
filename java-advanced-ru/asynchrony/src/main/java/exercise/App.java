@@ -33,8 +33,7 @@ class App {
         return future1.thenCombine(future2, (text1, text2) -> {
             Path filePath = Paths.get(outputFile).toAbsolutePath();
             try {
-                Files.writeString(filePath, text1, StandardOpenOption.CREATE);
-                Files.writeString(filePath, text2, StandardOpenOption.APPEND);
+                Files.writeString(filePath, text1 + text2, StandardOpenOption.CREATE);
                 return text1 + " " + text2;
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -43,6 +42,28 @@ class App {
             System.out.println(ex.getMessage());
             return null;
         });
+    }
+
+    public static CompletableFuture<Long> getDirectorySize(String path) {
+        var directory = new File(path);
+        if (!directory.isDirectory()) {
+            return CompletableFuture.completedFuture(0L);
+        }
+
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return CompletableFuture.completedFuture(0L);
+        }
+
+        CompletableFuture<Long>[] fileSizes = Arrays.stream(files)
+                .filter(File::isFile)
+                .map(file -> CompletableFuture.supplyAsync(file::length))
+                .toArray(CompletableFuture[]::new);
+
+        return CompletableFuture.allOf(fileSizes)
+                .thenApply(v -> Arrays.stream(fileSizes)
+                        .mapToLong(CompletableFuture::join)
+                        .sum());
     }
     // END
 
@@ -53,7 +74,9 @@ class App {
             "src/main/resources/file2.txt",
             "src/main/resources/result.txt"
         ).get();
+        CompletableFuture<Long> size = getDirectorySize("src/main/resources");
         System.out.println(resultText);
+        System.out.println(size.get());
         // END
     }
 }
